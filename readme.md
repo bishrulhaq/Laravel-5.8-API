@@ -7,3 +7,5 @@ This tutorial focuses on setting up an REST API in Laravel 5.8 using PHPUnit and
 - Change the .env.example to .env (Specify the 'project_path' in DB_DATABASE)
 - Type vendor\bin\phpunit to run tests
 
+## Links to this Project Tutorial : https://bishrulhaq.com/posts/build-an-api-with-laravel
+
