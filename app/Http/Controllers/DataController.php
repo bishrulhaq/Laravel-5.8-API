@@ -28,9 +28,13 @@ class DataController extends Controller
         ]);
     }
 
-    public function show(Data $data)
+    public function show(Request $request)
     {
-        return $data;
+        $data = Data::where('id' , '=' , $request->id)->first();
+        return response()->json([
+            'message' => 'Fetching Data!',
+            'data' => $data
+        ]);
     }
 
     public function update(Request $request, Data $data)
@@ -43,8 +47,7 @@ class DataController extends Controller
         $data->update($request->all());
 
         return response()->json([
-            'message' => 'Data Successfully Updated!',
-            'data' => $data
+            'message' => 'Great success! Task updated',
         ]);
     }
 
