@@ -3,101 +3,102 @@
 namespace Tests\Feature;
 
 use App\Data;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DataTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
+
 
     /** @test */
     public function show_all_data()
     {
-        $data = factory(Data::class, 10)->create();
+        factory(Data::class, 10)->create();
 
-        $response = $this->get(route('path.index'));
+        $response = $this->json('GET', route('path.index'));
 
         $response->assertStatus(200);
 
-        $response->assertJson($data->toArray());
+        $response->json();
+
+        /* Uncomment to view Response */
+        //print_r($response->json());
     }
 
     /** @test */
     public function create_data()
     {
-        $response = $this->post(route('path.store'), [
+        $response = $this->json('POST', route('path.store'), [
             'title'       => 'Dummy title',
             'description' => 'Dummy description'
         ]);
 
         $response->assertStatus(200);
 
-        $this->assertDatabaseHas('data', ['title' => 'Dummy title']);
+        $this->assertEquals('Dummy title',$response->json()['data']['title']);
 
-        $response->assertJsonStructure(['message',
-            'data' =>
-                ['title',
-                    'description',
-                    'updated_at',
-                    'created_at',
-                    'id'
-                ]]);
+        /* Uncomment to view Response */
+        //print_r($response->json());
     }
 
     /** @test */
-    public function show_data()
+    public function show_specific_data()
     {
-        $this->post(route('path.store'), [
+        $this->json('POST', route('path.store'), [
             'title'       => 'Dummy title',
             'description' => 'Dummy description'
         ]);
 
         $data = Data::all()->first();
 
-        $response = $this->get(route('path.show', $data->id));
+        $response = $this->json('GET', route('path.show',$data->id));
 
         $response->assertStatus(200);
-        $response->assertJsonStructure(['message',
-            'data' =>
-                ['title',
-                    'description',
-                    'updated_at',
-                    'created_at',
-                    'id'
-                ]]);
+
+        $response->json();
+
+        /* Uncomment to view Response */
+        //print_r($response->json());
     }
 
     /** @test */
     public function update_data()
     {
-        $this->post(route('path.store'), [
+        $this->json('POST', route('path.store'), [
             'title'       => 'Dummy title',
             'description' => 'Dummy description'
         ]);
 
         $data = Data::all()->first();
 
-        $response = $this->put(route('path.update', $data->id), ['title' => 'Dummy updated title']);
+        $response = $this->json('PUT', route('path.show',$data->id),['title' => 'Dummy updated title']);
 
         $response->assertStatus(200);
 
-        $response->assertJsonStructure(['message']);
+        $response->json();
+
+        /* Uncomment to view Response */
+        //print_r($response->json());
     }
 
     /** @test */
     public function delete_data()
     {
-        $this->post(route('path.store'), [
+        $this->json('POST', route('path.store'), [
             'title'       => 'Dummy title',
             'description' => 'Dummy description'
         ]);
 
         $data = Data::all()->first();
 
-        $response = $this->delete(route('path.destroy', $data->id));
+        $response = $this->json('DELETE', route('path.destroy', $data->id));
 
-        $response->assertJsonStructure([
-            'message'
-        ]);
+        $response->assertStatus(200);
+
+        $response->json();
+
+        /* Uncomment to view Response */
+        //print_r($response->json());
     }
 }
